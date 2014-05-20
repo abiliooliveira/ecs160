@@ -30,22 +30,43 @@
 \section*{Types}
 Base classes from requirement's class diagram:
 \begin{zed}
-[Admin, Profile, File, Date Range]
+[Admin, Profile, File, Date Range, Pet, FamilyStructure]
 \end{zed}
 
 \section*{The System}
 The system must hold a schema by itself with the purpose of declaring its elements as well as its invariants:
 \begin{schema}{HomestayApp}
-	Students : \power Profile\\
-	Hosts : \power Profile\\
-	Manager : \power Admin\\
-	Requests : Students \rightarrow Hosts
+	\Xi STUDENTS\\
+	\Xi HOSTS\\
+	managers : \power Admin\\
+	requests : Profile \rightarrow Profile
 \where
-	Students \in Profile\\
-	Hosts \in Profile\\
-	Students \cap Hosts = \emptyset\\
-	\forall s : Students | s \in \dom Requests \bullet \#(s \dres Requests) \leq 3
+	students \subseteq Profile\\
+	hosts \subseteq Profile\\
+	students \cap Hosts = \emptyset\\
+	\dom requests \subset students\\
+	\ran requests \subset hosts\\
+	\forall s : students | s \in \dom Requests \bullet \#(s \dres Requests) \leq 3
 \end{schema}
+
+\section*{Actors}
+\begin{schema}{STUDENTS}
+	students : \power Profile\\
+	pet_preference : Pet \rightarrow \nat\\
+	family_structure_preference : \nat \rightarrow FamilyStructure\\
+	allergies : \power Allergie\\
+\where
+
+\end{schema}
+
+\begin{schema}{HOSTS}
+	hosts : \power Profile\\
+	pets : \power Pet\\
+	family_structure : FamilyStructure\\
+\where
+
+\end{schema}
+
 
 
 
