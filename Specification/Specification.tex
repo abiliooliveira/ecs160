@@ -1,0 +1,78 @@
+\documentclass[11pt]{article}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{datetime}
+\usepackage{czt}
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+\headheight=26pt
+
+\pagestyle{fancy}
+\lhead{Abilio Oliveira \& James Dryden \\ 999550263 993083613} % Top left header
+\rhead{Project Specification - ECS 160 \\ \today}
+
+\begin{document}
+
+\begin{center}\LARGE
+	\textbf{Homestay App Specification}
+\end{center}
+
+\section*{Types}
+Base classes from requirement's class diagram:
+\begin{zed}
+[Admin, Profile, File, Date Range]
+\end{zed}
+
+\section*{The System}
+The system must hold a schema by itself with the purpose of declaring its elements as well as its invariants:
+\begin{schema}{HomestayApp}
+	Students : \power Profile\\
+	Hosts : \power Profile\\
+	Manager : \power Admin\\
+	Requests : Students \rightarrow Hosts
+\where
+	Students \in Profile\\
+	Hosts \in Profile\\
+	Students \cap Hosts = \emptyset\\
+	\forall s : Students | s \in \dom Requests \bullet \#(s \dres Requests) \leq 3
+\end{schema}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
