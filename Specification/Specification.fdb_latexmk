@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1400551093 "Specification.tex" "Specification.pdf" "Specification" 1400551094
+["pdflatex"] 1400875320 "Specification.tex" "Specification.pdf" "Specification" 1400875321
   "/Users/abiliooliveira/Library/texmf/tex/latex/czt/czt.sty" 1398448861 75222 817b802d1eed142d6cefed17dff5961e ""
   "/usr/local/texlive/2013/texmf-dist/tex/context/base/supp-pdf.mkii" 1337017135 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/etexcmds.sty" 1335995445 7612 c47308d923ec19888707b0f1792b326a ""
@@ -42,8 +42,8 @@
   "/usr/local/texlive/2013/texmf-dist/tex/latex/pdftex-def/pdftex.def" 1306616590 55368 3c8a0d99822330f2dfabc0dfb09ce897 ""
   "/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/courier.sty" 1156702453 804 52ceb7e4cfdff7c69f852f42880bf040 ""
   "/usr/local/texlive/2013/texmf-dist/tex/latex/stmaryrd/Ustmry.fd" 1137110872 1766 216b0f832c406513647608b5bb9bb8ff ""
-  "Specification.aux" 1400551094 90 627c3af3aaf3a284e448b0ffd42b04c1 ""
-  "Specification.tex" 1400551090 4622 9031763591f8cbbf8b9022e6e8a8e1ec ""
+  "Specification.aux" 1400875321 90 627c3af3aaf3a284e448b0ffd42b04c1 ""
+  "Specification.tex" 1400875319 6615 1b573c6085d2cbdbec3b6fe6fd7c440b ""
   (generated)
   "Specification.log"
   "Specification.aux"

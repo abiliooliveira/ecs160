@@ -33,7 +33,11 @@
 \section*{Types}
 Base classes from requirement's class diagram:
 \begin{zed}
-[Admin, Profile, File, Date Range, Pet, FamilyStructure]
+[Admin, Profile, File, Date Range, Allergie]\\
+Response ::= success | error\\
+ProfileType ::= student | host\\
+FamilyStructure ::= couple | couple w/ kids| single parent | gay couple | gay couple w/ kids | other\\
+Pet ::= cat | dog | chicken | birds | snakes | fish | other\\
 \end{zed}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,8 +48,8 @@ The system must hold a schema by itself with the purpose of declaring its elemen
 	\Xi STUDENTS\\
 	\Xi HOSTS\\
 	managers : \power Admin\\
-	requests : Profile \rightarrow Profile
-	authorized_requests : Profile \rightarrow Profile
+	requests : Profile \rightarrow Profile\\
+	authorized\_requests : Profile \rightarrow Profile
 \where
 	students \subseteq Profile\\
 	hosts \subseteq Profile\\
@@ -60,19 +64,13 @@ The system must hold a schema by itself with the purpose of declaring its elemen
 
 \section*{Actors}
 \begin{schema}{STUDENTS}
-	students : \power Profile\\
-	pet\_preference : Pet \rightarrow \nat\\
-	family\_structure\_preference : \nat \rightarrow FamilyStructure\\
-	allergies : \power Allergie\\
+	students : \power (Profile \rightarrow ((\nat \rightarrow FamilyStructure) \cross \power (\nat \rightarrow Pet) \cross \power Allergie))  \\
 \where
-
 \end{schema}
 
 \begin{schema}{HOSTS}
-	hosts : \power Profile\\
-	pets : \power Pet\\
-	family\_structure : FamilyStructure\\
-\where
+	hosts : \power (Profile \rightarrow (\power Pet \cross \power FamilyStructure \cross \power Allergie))
+	\where
 
 \end{schema}
 
@@ -100,16 +98,54 @@ The system must hold a schema by itself with the purpose of declaring its elemen
 \begin{schema}{CreateNewProfile}
 	\Delta STUDENTS\\
 	\Delta HOSTS\\
+	type? : ProfileType\\
+	p? : Profile\\
+	family\_str\_if\_host? : FamilyStructure\\
+	pets\_if\_host? : \power Pet\\
+	family\_str\_pref\_if\_std? : \power (\nat \rightarrow FamilyStructure)\\
+	pet\_pref\_if\_std? : \power Pet\\
+	allr? : \power Allergie
+	r! : Response
+\where
+	(type? = student \wedge\\
+	\indent students' = students \cup \{p? \mapsto (family\_str\_pref\_if\_std?,\ pet\_pref\_if\_std?,\ allr?)\} \wedge\\
+	\indent hosts' = hosts \wedge r! = success)\ \vee\\
+	(type? = host \wedge\\
+	 \indent hosts' = hosts \cup \{p? \mapsto (pets\_if\_host?,\ family\_str\_if\_host?,\ allr?)\} \wedge\\
+	 \indent students' = students \wedge r! = success)
 \end{schema}
+When creating a profile the system doesn't yet know if the request is for a student profile or a host profile, that's why we need \emph{type?}.
 
 \begin{schema}{UpdateProfile}
 	\Delta STUDENTS\\
 	\Delta HOSTS\\
+	p? : Profile\\
+	family\_str\_if\_host? : FamilyStructure\\
+	pets\_if\_host? : \power Pet\\
+	family\_str\_pref\_if\_std? : \power (\nat \rightarrow FamilyStructure)\\
+	pet\_pref\_if\_std? : \power Pet\\
+	allr? : \power Allergie
+	r! : Response
+\where
+	(p? \in \dom students \wedge\\
+	\indent students' = students \cup \{p? \mapsto (family\_str\_pref\_if\_std?,\ pet\_pref\_if\_std?,\ allr?)\} \wedge\\
+	\indent hosts' = hosts \wedge r! = success)\ \vee\\
+	(p? \in \dom students \wedge\\
+	\indent hosts' = hosts \cup \{p? \mapsto (pets\_if\_host?,\ family\_str\_if\_host?,\ allr?)\} \wedge\\
+	\indent students' = students \wedge r! = success)\ \vee\\
+	(p? \not\in \dom students \wedge p? \not\in \dom hosts\ \wedge\\
+	\indent students' = students\\
+	\indent hosts' = hosts\\
+	\indent r! = error)
 \end{schema}
+When updating, we can tell from \emph{p?} if its about students or hosts. Either way, this operation overwrites the data previously inserted for any information about students and/or hots.
 
 \begin{schema}{DeleteProfile}
 	\Delta STUDENTS\\
 	\Delta HOSTS\\
+	p? : Profile\\
+	r! : Response
+\where
 \end{schema}
 
 \begin{schema}{ViewRequests}
@@ -123,6 +159,7 @@ The system must hold a schema by itself with the purpose of declaring its elemen
 \begin{schema}{ManualRequest}
 	\Delta HOMESTAYAPP\\
 	\Xi MANUAL
+
 
 \end{schema}
 
