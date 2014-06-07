@@ -34,44 +34,48 @@
 Base classes from requirement's class diagram:
 \begin{zed}
 [Admin, Profile, File, Date Range, Allergie]\\
-Response ::= success | error\\
+Response ::= success | error | reportAccept | time | other\\
 ProfileType ::= student | host\\
-FamilyStructure ::= couple | couple w/ kids| single parent | gay couple | gay couple w/ kids | other\\
+FamilyStructure ::= couple | couple\ w/\ kids| single\ parent | gay\ couple | gay\ couple\ w/\ kids | other\\
 Pet ::= cat | dog | chicken | birds | snakes | fish | other\\
 \end{zed}
+\emph{Obs: Response was added to fulfill zed description requirements}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{The System}
-The system must hold a schema by itself with the purpose of declaring its elements as well as its invariants:
 \begin{schema}{HOMESTAYAPP}
 	\Xi STUDENTS\\
 	\Xi HOSTS\\
 	managers : \power Admin\\
 	requests : Profile \rightarrow Profile\\
-	authorized\_requests : Profile \rightarrow Profile
+	authorized\_requests : Profile \rightarrow Profile\\
+	accepted\_requests : Profile \rightarrow Profile
 \where
 	students \subseteq Profile\\
 	hosts \subseteq Profile\\
 	students \cap Hosts = \emptyset\\
 	\dom requests \subset students\\
 	\ran requests \subset hosts\\
-	requests \cap authorized_requests = \emptyset\\
+	requests \cap authorized\_requests = \emptyset\\
+	requests \cap accepted\_requests = \emptyset\\
+	authorized\_requests \cap accepted\_requests = \emptyset\\
 	\forall s : students | s \in \dom Requests \bullet \#(s \dres Requests) \leq 3
 \end{schema}
+The system must hold a schema by itself with the purpose of declaring its elements as well as its invariants.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{Actors}
+For the purposes of this specification, we are only working with three main properties for both hosts and students, that is: Family Structure, Allergies and Pets.
+Those are the main points to be covered by this specification. Other properties, such as name, phone\_number, etc are not as important as the ones here approached.
 \begin{schema}{STUDENTS}
-	students : \power (Profile \rightarrow ((\nat \rightarrow FamilyStructure) \cross \power (\nat \rightarrow Pet) \cross \power Allergie))  \\
+	students : \power (Profile \rightarrow (\power (\nat \rightarrow FamilyStructure) \cross \power (\nat \rightarrow Pet) \cross \power Allergie))  \\
 \where
 \end{schema}
-
 \begin{schema}{HOSTS}
-	hosts : \power (Profile \rightarrow (\power Pet \cross \power FamilyStructure \cross \power Allergie))
-	\where
-
+	hosts : \power (Profile \rightarrow (\power Pet \cross FamilyStructure \cross \power Allergie))
+\where
 \end{schema}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -80,14 +84,32 @@ The system must hold a schema by itself with the purpose of declaring its elemen
 
 \begin{schema}{MANUAL}
 	\Xi HOMESTAYAPP\\
+	manual\_selection : (\power Pet \cross \power FamilyStructure \cross \power Allergie) \rightarrow \power Profile\\
+\where
+	\forall f\_pet : (\power Pet, f\_family : \power FamilyStructure, f\_allergie : \power Allergie; s\_hosts : \power Profile\\
+	\bullet manual\_selection\ f\_pet\ f\_family\ f\_allergie\ \Leftrightarrow\\
+	\forall h : hosts |\\ 
+					\indent ((\forall f\_p : f\_pet \bullet f\_p \in first(\ran h)) \vee \\
+					\indent (\forall f\_f : f\_family \bullet f\_f \in second(\ran h))) \wedge\\
+					\indent \neg (\forall f\_a : f\_allergie \bullet f\_a \in thrid(\ran h)) \bullet s\_hosts \cup h\}
 \end{schema}
+This operation goes through every host and return those hosts that `obey' the filters.
 
 \section*{Selection Wizard}
 
 \begin{schema}{WIZARD}
 	\Xi HOMESTAYAPP\\
-\end{schema}
+	selection\_wizard : (\power (\nat \rightarrow Pet) \cross \power (\nat \rightarrow FamilyStructure) \cross \power Allergie) \rightarrow \textbf{seq} Profile\\
+\where
+	\forall f\_pet : (\power (\nat \rightarrow Pet), f\_family : \power (\nat \rightarrow FamilyStructure), f\_allergie : \power Allergie; s\_hosts : \textbf{seq} Profile\\
+	\bullet\ selection\_wizard\ f\_pet\ f\_family\ f\_allergie\ \Leftrightarrow\\
+	\forall h : hosts \bullet order\_and\_normalize (s\_hosts \cup \{\\
+					\indent	(\forall f\_p : f\_pets \bullet (\ran f\_p \in first(\ran h) \wedge \dom f\_p)) *\\
+					\indent	(\forall f\_f : f\_family \bullet (\ran f\_f \in second(\ran h) \wedge \dom f\_f)) *\\
+					\indent	(\forall f\_a : f\_allergies \bullet (\ran f\_a \in third(\ran h) \wedge 2)) \mapsto h\})
 
+\end{schema}
+This operation takes as input a `family preference', a `pet preference' and the allergies that a student is subject to. This operation outputs a \textbf{sequece} of hosts, ordered by the `order\_and\_normalize function' (that we do not define here). The computation works by multiplying the preference values of the elements encountered inside each hosts `family structure' and `pets'. The allergiers encountered have a weight of 2.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{General Operations}
@@ -104,7 +126,7 @@ The system must hold a schema by itself with the purpose of declaring its elemen
 	pets\_if\_host? : \power Pet\\
 	family\_str\_pref\_if\_std? : \power (\nat \rightarrow FamilyStructure)\\
 	pet\_pref\_if\_std? : \power Pet\\
-	allr? : \power Allergie
+	allr? : \power Allergie\\
 	r! : Response
 \where
 	(type? = student \wedge\\
@@ -124,7 +146,7 @@ When creating a profile the system doesn't yet know if the request is for a stud
 	pets\_if\_host? : \power Pet\\
 	family\_str\_pref\_if\_std? : \power (\nat \rightarrow FamilyStructure)\\
 	pet\_pref\_if\_std? : \power Pet\\
-	allr? : \power Allergie
+	allr? : \power Allergie\\
 	r! : Response
 \where
 	(p? \in \dom students \wedge\\
@@ -138,18 +160,47 @@ When creating a profile the system doesn't yet know if the request is for a stud
 	\indent hosts' = hosts\\
 	\indent r! = error)
 \end{schema}
-When updating, we can tell from \emph{p?} if its about students or hosts. Either way, this operation overwrites the data previously inserted for any information about students and/or hots.
+When updating, we can tell from \emph{p?} if its about students or hosts. Either way, this operation overwrites the data previously inserted for any information about students and/or hosts.
 
 \begin{schema}{DeleteProfile}
 	\Delta STUDENTS\\
 	\Delta HOSTS\\
+	\Delta HOMESTAYAPP\\
 	p? : Profile\\
 	r! : Response
 \where
+	(p? \in \dom students\ \wedge\\
+	\indent students' = students \backslash \{p?\}\ \dres students\ \wedge\\
+	\indent requests' = requests \backslash \{p?\}\ \dres requests\ \wedge\\
+	\indent authorized\_requests' = authorized\_requests \backslash \{p?\}\ \dres authorized\_requests\ \wedge\\
+	\indent accepted\_requests' = accepted\_requests \backslash \{p?\}\ \dres accepted\_requests\ \wedge\\
+	\indent managers' = managers\\
+	\indent hosts' = hosts \wedge r! = success)\ \vee\\
+	(p? \in \dom hosts\ \wedge\\
+	\indent hosts' = hosts \backslash \{p?\}\ \dres hosts\ \wedge\\
+	\indent requests' = requests \backslash requests \rres \{p?\}\ \wedge\\
+	\indent authorized\_requests' = authorized\_requests \backslash authorized\_requests\ \rres \{p?\}\ \wedge\\
+	\indent accepted\_requests' = accepted\_requests \backslash accepted\_requests\ \rres \{p?\} \wedge\\
+	\indent managers' = managers\\
+	\indent students' = students \wedge r! = success)\ \vee\\
+	(p? \not\in \dom students \wedge p? \not\in \dom hosts\ \wedge r! = error)
 \end{schema}
+When deleting a profile, we need to make sure that no garbage remains on the system; thats why we make sure to remove those requests that contain such profile.
 
 \begin{schema}{ViewRequests}
 	\Xi HOMESTAYAPP\\
+	p? : Profile\\
+	r! : Response\\
+\where
+	(p? \in \dom students \wedge\\
+								\indent display\_request(p? \dres requests) \wedge\\
+								\indent display\_request(p? \dres authorized\_requests)\\
+								\indent display\_request(p? \dres accepted\_requests) \wedge r! = success) \vee\\
+	(p? \in \dom hosts \wedge\\
+							\indent	display\_request(requests \rres p?) \wedge\\
+							\indent	display\_request(authorized\_requests \rres p?) \wedge\\
+							\indent	display\_request(accepted\_requests \rres p?) \wedge r! = success) \vee\\
+	(p? \not\in \dom students \wedge p? \not\in \dom hosts \wedge r! = error)
 \end{schema}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,32 +209,34 @@ When updating, we can tell from \emph{p?} if its about students or hosts. Either
 
 \begin{schema}{ManualRequest}
 	\Delta HOMESTAYAPP\\
-	\Xi MANUAL
-
-
+	\Xi MANUAL\\
+	s? : Profile\\
+	f\_family : \power Family\\
+	f\_pets : \power Pet\\
+	f\_allergies : \power Allegie\\
+	select\_hosts? : \power Profile\\
+	r! : Response
+\where
+	temp = manual\_selection f\_pets f\_family f\_allergies\\
+	requests' = requests \cup (\forall c : select\_hosts(temp) \bullet \{s? \mapsto c\})\\
+	managers' = managers\\
+	authorized_requests' = authorized_requests\\
 \end{schema}
+This schema allows the student to make a request based on a selection of hosts over what `manual\_selection' returns. We here introduce the function
+`select\_hosts' but we don't define it, since it is a interactive behavior and subject to time constraints (thus out of zed domain).
 
 \begin{schema}{WizardRequest}
 	\Delta HOMESTAYAPP\\
 	\Xi WIZARD\\
-
+	s? : Profile\\
+	r! : Response\\
+\where
+	temp = selection\_wizard\ first(\ran s?)\ second(\ran s?)\ third(\ran s?)\\
+	requests' = requests \cup (\forall c : \ran( first\_three(temp)) \bullet \{s? \mapsto c\})\\
+	managers' = managers\\
+	authorized_requests' = authorized_requests\\
 \end{schema}
-
-\begin{schema}{SetPetPreference}
-	\Delta STUDENTS\\
-\end{schema}
-
-\begin{schema}{SetFamilyStructurePreference}
-	\Delta STUDENTS\\
-\end{schema}
-
-\begin{schema}{SetSmokingPreference}
-	\Delta STUDENTS\\
-\end{schema}
-
-\begin{schema}{SetAllergies}
-	\Delta STUDENTS\\
-\end{schema}
+This schema allows the students to make a request based on its own preferences. The function `first\_three' returns the first three elements from a sequence (not defined in this specification).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -191,31 +244,60 @@ When updating, we can tell from \emph{p?} if its about students or hosts. Either
 
 \begin{schema}{AcceptRequest}
 	\Delta HOMESTAYAPP\\
-\end{schema}
-
-\begin{schema}{SetPets}
-	\Delta HOSTS\\
-\end{schema}
-
-\begin{schema}{SetFamilyStructure}
-	\Delta HOSTS\\
+	s? : Profile \rightarrow Profile\\
+	r! : Response\\
+\where
+	s? \in authorized\_requests\\
+	accepted\_requests' = accepted\_requests \cup \{s?\}\\
+	authorized\_requests' = authorized\_requests \backslash \{s?\}\\
+	requests' = requests\\
+	managers' = managers\\
+	r! = reportAccept\\
 \end{schema}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection*{Operations related to Admin}
 
-\begin{schema}{ViewPendingRequests}
+\begin{schema}{ViewRequests}
 	\Xi HOMESTAYAPP\\
+	s? : \nat\\
+\where
+	(s = 0\ \wedge\\
+	\indent\{\forall x : Profile \rightarrow Profile | x \in requests \bullet display\_requests(x)\})\ \vee\\
+	
+	(s = 1\ \wedge\\
+	\indent\{\forall x : Profile \rightarrow Profile | x \in authorized\_requests \bullet display\_requests(x)\})\ \vee\\
+	
+	(s = 2\ \wedge\\
+	\indent\{\forall x : Profile \rightarrow Profile | x \in accepted\_requests \bullet display\_requests(x)\})
 \end{schema}
+The view requests schema allows the host or student to view all requests that have been authorized by the admin, accepted by the host, or that are still awaiting authorization.
 
 \begin{schema}{AuthorizeRequest}
 	\Delta HOMESTAYAPP\\
+	s? : Profile \rightarrow Profile\\
+	r! : Response\\
+\where
+	s? \in requests\\
+	authorized\_requests' = authorized\_requests \cup \{s?\}\\
+	requests' = requests \backslash \{s?\}\\
+	accepted\_requests' = accepted_requests\\
+	managers' = managers\\
+	r! = reportAccept\\
 \end{schema}
+This schema refers to the second stage of a request, where it gets authorized by the Admin; we need then to take a request from the request set and put it into the authorized request set, worrying to not change any other set of the main system.
 
 \begin{schema}{ArrangeMeeting}
 	\Delta HOMESTAYAPP\\
+	s? : Profile \rightarrow Profile\\
+	r! : Response\\
+\where
+	s \in accepted\_requests\\
+	r! = time
 \end{schema}
+The arrange meeting schema provides the ability to take as input a request, which is a relation between a student and host, and notify both the student and host of a meeting time.
+
 
 
 

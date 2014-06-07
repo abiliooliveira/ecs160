@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  23 MAY 2014 13:02
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  23 MAY 2014 17:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -361,48 +361,59 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 35.
 (/usr/local/texlive/2013/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Overfull \hbox (1.77463pt too wide) in alignment at lines 35--41
+Overfull \hbox (31.73042pt too wide) in alignment at lines 35--41
 [] 
  []
 
 [1{/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 ]
-Overfull \hbox (16.1318pt too wide) in alignment at lines 99--116
+Overfull \hbox (13.06136pt too wide) in alignment at lines 86--95
 [] 
  []
 
 
-Overfull \hbox (16.1318pt too wide) in alignment at lines 120--140
+Overfull \hbox (85.19588pt too wide) in alignment at lines 101--111
 [] 
  []
 
-[2] [3] 
+
+Overfull \hbox (16.1318pt too wide) in alignment at lines 121--138
+[] 
+ []
+
+[2]
+Overfull \hbox (16.1318pt too wide) in alignment at lines 142--162
+[] 
+ []
+
+[3] [4] [5] 
 AED: lastpage setting LastPage
-[4] (./Specification.aux) ) 
+[6] (./Specification.aux) ) 
 Here is how much of TeX's memory you used:
- 4578 strings out of 493315
- 62526 string characters out of 6137904
- 231866 words of memory out of 5000000
- 7954 multiletter control sequences out of 15000+600000
- 11089 words of font info for 41 fonts, out of 8000000 for 9000
+ 4580 strings out of 493315
+ 62550 string characters out of 6137904
+ 235866 words of memory out of 5000000
+ 7955 multiletter control sequences out of 15000+600000
+ 11397 words of font info for 42 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  38i,15n,43p,923b,297s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2013/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmr8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmsy10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmsy8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmti10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmti8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/s
-ymbols/msam10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfon
-ts/symbols/msbm10.pfb>
-Output written on Specification.pdf (4 pages, 110625 bytes).
+ic/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmsy10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmsy8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmti10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmti8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/sy
+mbols/msam10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfont
+s/symbols/msbm10.pfb>
+Output written on Specification.pdf (6 pages, 129627 bytes).
 PDF statistics:
- 57 PDF objects out of 1000 (max. 8388607)
- 40 compressed objects within 1 object stream
+ 67 PDF objects out of 1000 (max. 8388607)
+ 47 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
